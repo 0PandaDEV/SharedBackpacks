@@ -73,11 +73,23 @@ public class BackpacksCommand implements CommandExecutor, TabCompleter {
 
             BackpackAPI.deleteConfig(player, args[1]);
 
-        } else if (args.length ==  3 && args[0].equalsIgnoreCase("rename")){
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("rename")){
 
             if (!player.hasPermission("sharedbackpacks.config.rename")){player.sendMessage(Main.getNoPerm()); return false;}
 
-            BackpackAPI.renameConfig(player, args[1], args[2]);
+            new AnvilGUI.Builder()
+                    .onComplete((completion) -> {
+
+                        BackpackAPI.renameConfig(player, args[1], completion.getText());
+
+                        return Collections.singletonList(AnvilGUI.ResponseAction.close());
+                    })
+                    .preventClose()
+                    .itemLeft(new ItemStack(Material.NAME_TAG))
+                    .title("Enter the name")
+                    .text(args[1])
+                    .plugin(Main.getInstance())
+                    .open(player);
 
         } else {
             player.sendMessage(Main.getPrefix() + "§6/backpack create <name>\n                   §6/backpack add <player> <backpack>\n                   §6/backpack remove <player> <backpack>\n                   §6/backpack delete <backpack>\n                   §6/backpack gui");
