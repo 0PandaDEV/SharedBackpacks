@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import tk.pandadev.sharedbackpacks.Main;
 import tk.pandadev.sharedbackpacks.guis.Guis;
 import tk.pandadev.sharedbackpacks.utils.BackpackAPI;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -82,6 +83,8 @@ public class BackpacksCommand implements CommandExecutor, TabCompleter {
 
                         BackpackAPI.renameConfig(player, args[1], completion.getText());
 
+                        Main.refreshMap();
+
                         return Collections.singletonList(AnvilGUI.ResponseAction.close());
                     })
                     .preventClose()
@@ -92,7 +95,7 @@ public class BackpacksCommand implements CommandExecutor, TabCompleter {
                     .open(player);
 
         } else {
-            player.sendMessage(Main.getPrefix() + "§6/backpack create <name>\n                   §6/backpack add <player> <backpack>\n                   §6/backpack remove <player> <backpack>\n                   §6/backpack delete <backpack>\n                   §6/backpack gui");
+            player.sendMessage(Main.getPrefix() + "§6/backpack create <name>\n                   §6/backpack add <player> <backpack>\n                   §6/backpack remove <player> <backpack>\n                   §6/backpack rename <backpack>\n                   §6/backpack delete <backpack>\n                   §6/backpack gui");
         }
 
         return false;
@@ -128,10 +131,6 @@ public class BackpacksCommand implements CommandExecutor, TabCompleter {
 
         if (args.length == 2 && args[0].equalsIgnoreCase("rename")){
             list.addAll(BackpackAPI.getBackpackNames());
-        }
-
-        if (args.length == 3 && args[0].equalsIgnoreCase("rename")){
-            list.add("<newName>");
         }
 
         return list;

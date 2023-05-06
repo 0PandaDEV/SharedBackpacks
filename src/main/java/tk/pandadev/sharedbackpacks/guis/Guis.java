@@ -72,6 +72,8 @@ public class Guis {
 
                             BackpackAPI.renameConfig(player, backpack, completion.getText());
 
+                            Main.refreshMap();
+
                             return Collections.singletonList(AnvilGUI.ResponseAction.close());
                         })
                         .preventClose()

@@ -12,7 +12,6 @@ import tk.pandadev.sharedbackpacks.commands.BagCommand;
 import tk.pandadev.sharedbackpacks.listener.InventoryListener;
 import tk.pandadev.sharedbackpacks.utils.BackpackAPI;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,24 +33,7 @@ public final class Main extends BasePlugin {
         Bukkit.getPluginManager().registerEvents(new InventoryListener(), this);
         getCommand("backpacks").setExecutor(new BackpacksCommand());
         getCommand("backpack").setExecutor(new BagCommand());
-
-        for (String backpack : BackpackAPI.getBackpackNames())
-        if (BackpackAPI.getConfig(backpack).getList("inventory") == null){
-            Inventory inventory = Bukkit.createInventory(null, 54, backpack);
-            BackpackAPI.inventorys.put(backpack, inventory.getContents());
-        } else{
-            Inventory inventory = Bukkit.createInventory(null, 54, backpack);
-            ConfigurationSection inventorySection = BackpackAPI.getConfig(backpack).getConfigurationSection("inventory");
-            if (inventorySection != null) {
-                for (String slotString : inventorySection.getKeys(false)) {
-                    int slot = Integer.parseInt(slotString);
-                    ItemStack item = inventorySection.getItemStack(slotString);
-                    inventory.setItem(slot, item);
-                }
-            }
-
-            BackpackAPI.inventorys.put(backpack, inventory.getContents());
-        }
+        refreshMap();
     }
 
     @Override
@@ -82,7 +64,26 @@ public final class Main extends BasePlugin {
         }
     }
 
+    public static void refreshMap() {
+        for (String backpack : BackpackAPI.getBackpackNames()) {
+            if (BackpackAPI.getConfig(backpack).getList("inventory") == null) {
+                Inventory inventory = Bukkit.createInventory(null, 54, backpack);
+                BackpackAPI.inventorys.put(backpack, inventory.getContents());
+            } else {
+                Inventory inventory = Bukkit.createInventory(null, 54, backpack);
+                ConfigurationSection inventorySection = BackpackAPI.getConfig(backpack).getConfigurationSection("inventory");
+                if (inventorySection != null) {
+                    for (String slotString : inventorySection.getKeys(false)) {
+                        int slot = Integer.parseInt(slotString);
+                        ItemStack item = inventorySection.getItemStack(slotString);
+                        inventory.setItem(slot, item);
+                    }
+                }
 
+                BackpackAPI.inventorys.put(backpack, inventory.getContents());
+            }
+        }
+    }
 
     public static String getPrefix() {
         return prefix;
