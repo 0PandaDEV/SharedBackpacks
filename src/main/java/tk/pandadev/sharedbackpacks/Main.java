@@ -2,13 +2,17 @@ package tk.pandadev.sharedbackpacks;
 
 import games.negative.framework.BasePlugin;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import tk.pandadev.sharedbackpacks.commands.BackpacksCommand;
 import tk.pandadev.sharedbackpacks.commands.BagCommand;
-import tk.pandadev.sharedbackpacks.listener.InventoryCloseListener;
+import tk.pandadev.sharedbackpacks.listener.InventoryListener;
 import tk.pandadev.sharedbackpacks.utils.BackpackAPI;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,9 +31,27 @@ public final class Main extends BasePlugin {
         saveDefaultConfig();
 
         Bukkit.getConsoleSender().sendMessage(prefix + "§aEnabled");
-        Bukkit.getPluginManager().registerEvents(new InventoryCloseListener(), this);
+        Bukkit.getPluginManager().registerEvents(new InventoryListener(), this);
         getCommand("backpacks").setExecutor(new BackpacksCommand());
         getCommand("backpack").setExecutor(new BagCommand());
+
+        for (String backpack : BackpackAPI.getBackpackNames())
+        if (BackpackAPI.getConfig(backpack).getList("inventory") == null){
+            Inventory inventory = Bukkit.createInventory(null, 54, backpack);
+            BackpackAPI.inventorys.put(backpack, inventory.getContents());
+        } else{
+            Inventory inventory = Bukkit.createInventory(null, 54, backpack);
+            ConfigurationSection inventorySection = BackpackAPI.getConfig(backpack).getConfigurationSection("inventory");
+            if (inventorySection != null) {
+                for (String slotString : inventorySection.getKeys(false)) {
+                    int slot = Integer.parseInt(slotString);
+                    ItemStack item = inventorySection.getItemStack(slotString);
+                    inventory.setItem(slot, item);
+                }
+            }
+
+            BackpackAPI.inventorys.put(backpack, inventory.getContents());
+        }
     }
 
     @Override
@@ -43,15 +65,19 @@ public final class Main extends BasePlugin {
         if (config == null) {
             player.sendMessage(prefix + "§cBackpack not found!");
         } else {
+
+            Inventory inventory = Bukkit.createInventory(null, 54, backpackName);
+            inventory.setContents(BackpackAPI.inventorys.get(backpackName));
+
             UUID ownerUUID = UUID.fromString(config.getString("owner"));
             if (ownerUUID.equals(player.getUniqueId())) {
-                player.openInventory(BackpackAPI.loadInventory(config, backpackName));
+                player.openInventory(inventory);
             } else {
                 List<String> members = config.getStringList("members");
                 if (!members.contains(player.getName())) {
                     player.sendMessage(prefix + "§7You are not a member of this backpack!");
                 }
-                player.openInventory(BackpackAPI.loadInventory(config, backpackName));
+                player.openInventory(inventory);
             }
         }
     }
