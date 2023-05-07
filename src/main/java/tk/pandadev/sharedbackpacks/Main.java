@@ -6,6 +6,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import tk.pandadev.sharedbackpacks.commands.BackpacksCommand;
 import tk.pandadev.sharedbackpacks.commands.BagCommand;
@@ -27,7 +28,7 @@ public final class Main extends BasePlugin {
     public void onEnable() {
         super.onEnable();
         instance = this;
-        saveDefaultConfig();
+        //saveDefaultConfig();
 
         Bukkit.getConsoleSender().sendMessage(prefix + "§aEnabled");
         Bukkit.getPluginManager().registerEvents(new InventoryListener(), this);
@@ -48,17 +49,22 @@ public final class Main extends BasePlugin {
             player.sendMessage(prefix + "§cBackpack not found!");
         } else {
 
-            Inventory inventory = Bukkit.createInventory(null, 54, backpackName);
+            InventoryHolder holder = Bukkit.getPlayer(config.getString("owner"));
+
+            Inventory inventory = Bukkit.createInventory(holder, 54, backpackName);
             inventory.setContents(BackpackAPI.inventorys.get(backpackName));
 
             UUID ownerUUID = UUID.fromString(config.getString("owner"));
             if (ownerUUID.equals(player.getUniqueId())) {
+                player.closeInventory();
                 player.openInventory(inventory);
             } else {
                 List<String> members = config.getStringList("members");
-                if (!members.contains(player.getName())) {
+                if (!members.contains(player.getUniqueId().toString())) {
                     player.sendMessage(prefix + "§7You are not a member of this backpack!");
+                    return;
                 }
+                player.closeInventory();
                 player.openInventory(inventory);
             }
         }
