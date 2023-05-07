@@ -125,15 +125,23 @@ public class BackpacksCommand implements CommandExecutor, TabCompleter {
             list.addAll(BackpackAPI.getBackpackNames());
         }
 
-        if (args.length == 2 && args[0].equalsIgnoreCase("delete")){
+        if (args.length == 2 && args[0].equalsIgnoreCase("delete")) {
             list.addAll(BackpackAPI.getBackpackNames());
         }
 
-        if (args.length == 2 && args[0].equalsIgnoreCase("rename")){
+        if (args.length == 2 && args[0].equalsIgnoreCase("rename")) {
             list.addAll(BackpackAPI.getBackpackNames());
         }
 
-        return list;
+        ArrayList<String> completerList = new ArrayList<String>();
+        String currentarg = args[args.length - 1].toLowerCase();
+        for (String s : list) {
+            String s1 = s.toLowerCase();
+            if (!s1.startsWith(currentarg)) continue;
+            completerList.add(s);
+        }
+
+        return completerList;
     }
 
 }
