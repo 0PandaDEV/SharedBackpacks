@@ -6,12 +6,12 @@
 
     <groupId>tk.pandadev</groupId>
     <artifactId>SharedBackpacks</artifactId>
-    <version>1.0</version>
+    <version>1.0-beta.1</version>
     <packaging>jar</packaging>
 
     <name>SharedBackpacks</name>
 
-    <description>Adds shared backpacks that can be configured.</description>
+    <description>A plugin that adds backpacks to the game that can be shared with other players.</description>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
