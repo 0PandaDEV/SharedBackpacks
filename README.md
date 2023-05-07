@@ -11,7 +11,7 @@
 
 <img src="https://cdn.discordapp.com/attachments/903181864116826112/1104734001870155786/About_blue.png" height="54px"/>
 
-SharedBackpacks allows players to create and manage backpacks, which are essentially inventories that can be shared among multiple players. The plugin provides functionality for creating and deleting backpacks, adding and removing members.
+This plugin enables you to effortlessly create and handle backpacks that can be shared among multiple players. The GUIs allow you to create and delete backpacks, as well as add and remove members. SharedBackpacks can assist you in sharing items with other players without having to drop them.
 
 ***
 
