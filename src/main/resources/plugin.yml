@@ -1,10 +1,10 @@
 name: '${project.name}'
 version: '${project.version}'
-main: tk.pandadev.sharedbackpacks.Main
+main: net.pandadev.sharedbackpacks.Main
 api-version: 1.13
 authors: [ PandaDEV ]
 description: '${project.description}'
-website: https://pandadev.tk
+website: https://pandadev.net
 commands:
   backpacks:
     permission: sharedbackpacks.config.*

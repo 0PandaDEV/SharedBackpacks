@@ -1,5 +1,8 @@
-package tk.pandadev.sharedbackpacks.commands;
+package net.pandadev.sharedbackpacks.commands;
 
+import net.pandadev.sharedbackpacks.Main;
+import net.pandadev.sharedbackpacks.guis.Guis;
+import net.pandadev.sharedbackpacks.utils.BackpackAPI;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -9,9 +12,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import tk.pandadev.sharedbackpacks.Main;
-import tk.pandadev.sharedbackpacks.guis.Guis;
-import tk.pandadev.sharedbackpacks.utils.BackpackAPI;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,11 +34,11 @@ public class BackpacksCommand implements CommandExecutor, TabCompleter {
             if (!player.hasPermission("sharedbackpacks.config.create")){player.sendMessage(Main.getNoPerm()); return false;}
 
             new AnvilGUI.Builder()
-                    .onComplete((completion) -> {
+                    .onClick((state, text) -> {
 
-                        BackpackAPI.createConfig(player, completion.getText());
+                        BackpackAPI.createBackpack(player, text.getText());
 
-                        player.sendMessage(Main.getPrefix() + "§7Backpack named §a" + completion.getText() + " §7was successfully created");
+                        player.sendMessage(Main.getPrefix() + "§7Backpack named §a" + text.getText() + " §7was successfully created");
 
                         return Collections.singletonList(AnvilGUI.ResponseAction.close());
                     })
@@ -52,49 +52,57 @@ public class BackpacksCommand implements CommandExecutor, TabCompleter {
 
             if (!player.hasPermission("sharedbackpacks.config.add")){player.sendMessage(Main.getNoPerm()); return false;}
 
-            if (!BackpackAPI.hasBackpacks(player)){player.sendMessage(Main.getNoBackpack()); return false;}
+            if (!BackpackAPI.hasBackpack(player)) {
+                player.sendMessage(Main.getNoBackpack());
+                return false;
+            }
             BackpackAPI.addMember(player, args[2], Bukkit.getPlayer(args[1]));
 
         } else if (args.length == 3 && args[0].equalsIgnoreCase("remove")){
 
             if (!player.hasPermission("sharedbackpacks.config.remove")){player.sendMessage(Main.getNoPerm()); return false;}
 
-            if (!BackpackAPI.hasBackpacks(player)){player.sendMessage(Main.getNoBackpack()); return false;}
+            if (!BackpackAPI.hasBackpack(player)) {
+                player.sendMessage(Main.getNoBackpack());
+                return false;
+            }
             BackpackAPI.removeMember(player, args[2], Bukkit.getPlayer(args[1]));
 
-        } else if (args.length == 1 && args[0].equalsIgnoreCase("gui")){
+        } else if (args.length == 1 && args[0].equalsIgnoreCase("gui")) {
 
             if (!player.hasPermission("sharedbackpacks.config.gui")){player.sendMessage(Main.getNoPerm()); return false;}
 
             Guis.backpackConfig(player);
 
-        } else if (args.length == 2 && args[0].equalsIgnoreCase("delete")){
-
-            if (!player.hasPermission("sharedbackpacks.config.delete")){player.sendMessage(Main.getNoPerm()); return false;}
-
-            BackpackAPI.deleteConfig(player, args[1]);
-
-        } else if (args.length == 2 && args[0].equalsIgnoreCase("rename")){
-
-            if (!player.hasPermission("sharedbackpacks.config.rename")){player.sendMessage(Main.getNoPerm()); return false;}
-
-            new AnvilGUI.Builder()
-                    .onComplete((completion) -> {
-
-                        BackpackAPI.renameConfig(player, args[1], completion.getText());
-
-                        Main.refreshMap();
-
-                        return Collections.singletonList(AnvilGUI.ResponseAction.close());
-                    })
-                    .preventClose()
-                    .itemLeft(new ItemStack(Material.NAME_TAG))
-                    .title("Enter the name")
-                    .text(args[1])
-                    .plugin(Main.getInstance())
-                    .open(player);
-
-        } else {
+        }
+//        else if (args.length == 2 && args[0].equalsIgnoreCase("delete")){
+//
+//            if (!player.hasPermission("sharedbackpacks.config.delete")){player.sendMessage(Main.getNoPerm()); return false;}
+//
+//            BackpackAPI.deleteConfig(player, args[1]);
+//
+//        } else if (args.length == 2 && args[0].equalsIgnoreCase("rename")){
+//
+//            if (!player.hasPermission("sharedbackpacks.config.rename")){player.sendMessage(Main.getNoPerm()); return false;}
+//
+//            new AnvilGUI.Builder()
+//                    .onClick((state, text) -> {
+//
+//                        BackpackAPI.renameConfig(player, args[1], text.getText());
+//
+//                        Main.refreshMap();
+//
+//                        return Collections.singletonList(AnvilGUI.ResponseAction.close());
+//                    })
+//                    .preventClose()
+//                    .itemLeft(new ItemStack(Material.NAME_TAG))
+//                    .title("Enter the name")
+//                    .text(args[1])
+//                    .plugin(Main.getInstance())
+//                    .open(player);
+//
+//        }
+        else {
             player.sendMessage(Main.getPrefix() + "§6/backpack create <name>\n                   §6/backpack add <player> <backpack>\n                   §6/backpack remove <player> <backpack>\n                   §6/backpack rename <backpack>\n                   §6/backpack delete <backpack>\n                   §6/backpack gui");
         }
 
@@ -110,28 +118,29 @@ public class BackpacksCommand implements CommandExecutor, TabCompleter {
             list.add("create");
             list.add("add");
             list.add("remove");
-            list.add("delete");
             list.add("gui");
-            list.add("rename");
+//            list.add("delete");
+//            list.add("rename");
         }
 
-        if (args.length == 2 && args[0].equalsIgnoreCase("add") || args.length == 2 && args[0].equalsIgnoreCase("remove")){
-            for (Player players : Bukkit.getOnlinePlayers()){
+        if (args.length == 2 && args[0].equalsIgnoreCase("add") || args.length == 2 && args[0].equalsIgnoreCase("remove")) {
+            for (Player players : Bukkit.getOnlinePlayers()) {
                 list.add(players.getName());
             }
+            list.remove(playert.getName());
         }
 
-        if (args.length == 3 && args[0].equalsIgnoreCase("add") || args.length == 3 && args[0].equalsIgnoreCase("remove")){
-            list.addAll(BackpackAPI.getBackpackNames());
+        if (args.length == 3 && args[0].equalsIgnoreCase("add") || args.length == 3 && args[0].equalsIgnoreCase("remove")) {
+            list.addAll(BackpackAPI.getOwnedBackpackNames(playert));
         }
-
-        if (args.length == 2 && args[0].equalsIgnoreCase("delete")) {
-            list.addAll(BackpackAPI.getBackpackNames());
-        }
-
-        if (args.length == 2 && args[0].equalsIgnoreCase("rename")) {
-            list.addAll(BackpackAPI.getBackpackNames());
-        }
+//
+//        if (args.length == 2 && args[0].equalsIgnoreCase("delete")) {
+//            list.addAll(BackpackAPI.getBackpackNames());
+//        }
+//
+//        if (args.length == 2 && args[0].equalsIgnoreCase("rename")) {
+//            list.addAll(BackpackAPI.getBackpackNames());
+//        }
 
         ArrayList<String> completerList = new ArrayList<String>();
         String currentarg = args[args.length - 1].toLowerCase();
