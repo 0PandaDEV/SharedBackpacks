@@ -2,6 +2,8 @@
 
 [My Website](https://pandadev.net)
 
+<a href="https://buymeacoffee.com/pandadev_"><img src="https://img.shields.io/badge/Buy_Me_A_Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black"/></a>
+
 For a list of all commands and how to use them, visit the [Wiki](https://github.com/0PandaDEV/SharedBackpacks/wiki)
 
 ***
